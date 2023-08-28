@@ -16,38 +16,43 @@ const AuthForm = () => {
     e.preventDefault();
     let enteredEmail=  emailInputRef.current.value;
     let enteredPassword= passwordInputRef.current.value;
+    
     setLoading(true);
-
+    let url;
     if(isLogin){
-
+      url = 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyDJHKs_PgIY125T1srwCsPexrbFFkRGC2I'
     } else{
-      console.log("Before fetch call");
-      fetch("https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDJHKs_PgIY125T1srwCsPexrbFFkRGC2I",{
-        method:'POST',
-        body: JSON.stringify({
-          email: enteredEmail,
-          password: enteredPassword,
-          returnSecureToken: true
-        }),
-        headers: {
-          'content-type' : 'application/json'
-        }
-      }).then(res =>{
-        setLoading(false);
-        if(res.ok){
-
-        } else{
-              return res.json().then(data=>{
-                let errorMessage = 'Authentication Failed! '
-              if(data && data.error && data.error.message){
-                errorMessage = data.error.message
-              }
-              alert(errorMessage)
-          })
-        }
-      })
+      url = "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDJHKs_PgIY125T1srwCsPexrbFFkRGC2I"
     }
-
+    fetch(url,{
+      method:'POST',
+      body: JSON.stringify({
+        email: enteredEmail,
+        password: enteredPassword,
+        returnSecureToken: true
+      }),
+      headers: {
+        'content-type' : 'application/json'
+      }
+    }).then(res =>{
+      setLoading(false);
+      if(res.ok){
+        return res.json();
+      } else{
+            return res.json().then(data=>{
+              let errorMessage = 'Authentication Failed! '
+            // if(data && data.error && data.error.message){
+            //   errorMessage = data.error.message
+            // }
+            
+            throw new Error(errorMessage)
+        })
+      }
+    }).then((data) => {
+      console.log(data)
+    }).catch(
+      (err) => {alert(err.message)}
+    )
     emailInputRef.current.value="";
     passwordInputRef.current.value="";
   }
