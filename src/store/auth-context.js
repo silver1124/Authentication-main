@@ -1,4 +1,5 @@
-import React,{ useState } from "react";
+import React,{ useState, useEffect } from "react";
+import { Link } from 'react-router-dom';
 
 const AuthContext = React.createContext({
     token: '',
@@ -22,6 +23,19 @@ export const AuthContextProvider = props => {
         setToken(null);
         localStorage.removeItem('token');
     };
+
+    useEffect(()=> {
+        if(userIsLoggedIn){
+            let timer = setTimeout(()=> {
+                logoutHandler();
+                alert('You have been automatically logged out due to inactivity.');
+                <Link to = '/auth'/>
+            },300000)
+            return(()=> {
+                clearTimeout(timer)
+            })
+        }
+    }, [userIsLoggedIn] )
 
     const contextValue = {
         token : token,
